@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variable
-echo "List of your variable:"
+echo "\nList of your variable:"
 echo "DEST_GITHUB_USERNAME: $DEST_GITHUB_USERNAME"
 echo "DEST_REPO_NAME: $DEST_REPO_NAME"
 echo "USER_EMAIL: $USER_EMAIL"
@@ -24,6 +24,7 @@ echo "===================\n\n"
 echo "Setting Up Git with username $DEST_GITHUB_USERNAME and email $USER_EMAIL"
 git config --global user.email "$USER_EMAIL"
 git config --global user.name "$DEST_GITHUB_USERNAME"
+git config --global pull.rebase false # Suppressing warning msg
 
 echo "Preparing your system"
 
@@ -38,7 +39,7 @@ fi
 cd $CLONE_DIR && git pull origin $PR_TO_BRANCH
 cd $CUR_DIR
 
-# To Do: Decouple copy mechanism
+# To Do: More flexible copy mechanism
 echo 'Copying from '"$SRC_DIR"'/*' "to $CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR"
 mkdir -p "$CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR"
 if ! cp -R "$SRC_DIR"/* "$CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR" ; then
@@ -62,7 +63,8 @@ if ! git push origin "$PUSH_TO_BRANCH" ; then
 fi
 
 echo "Create Pull Request"
-if ! curl --location -s --request POST "https://api.github.com/repos/$DEST_GITHUB_USERNAME/$DEST_REPO_NAME/pulls?access_token=$API_TOKEN_GITHUB" \
+if ! curl --location -s --request POST "https://api.github.com/repos/$DEST_GITHUB_USERNAME/$DEST_REPO_NAME/pulls" \
+--header "Authorization: token $API_TOKEN_GITHUB"
 --header 'Accept: application/vnd.github.v3+json' \
 --header 'Content-Type: application/json' \
 --data-raw "{
