@@ -38,8 +38,8 @@ jobs:
             PREFIX_DEST_FOLDER: 'planet/'
             # You can rename with format source(comma)target
             RENAME: >-
-                    jupyter.adoc,readme.adoc
-                    jupyter,docs
+                    readme.adoc,jupyter.adoc
+                    docs,jupyter
 ```
 
 * Create a release and see your action!
