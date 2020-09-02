@@ -1,19 +1,24 @@
 # Push and PR to Other Repo
 
-sample github action workflow file. Put `push_and_pr.yml` in `.github/workflow` with this code:
+Sample github action workflow file. 
+
+## Implement
+
+* Generate new [token](https://github.com/settings/tokens/new). Select `repo` scope.
+* In your_source_repo/settings/secret , add `API_TOKEN_GITHUB` with your generated token.
+* In source repo, put `push_and_pr.yml` in `.github/workflow` with this code:
 
 ```yml
-# This CI should run after mergin from Pull Request (after editing)
+# This CI should run after publish a new release
 
 name: Push to Other Repo and Make a PR
 
 on:
- pull_request:
-  types: [closed]
+  release:
+    types: [published]
   
 jobs:
   build:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,8 +31,20 @@ jobs:
             DEST_REPO_NAME: 'destination_repo'
             USER_EMAIL: 'test@example.com'
             PUSH_TO_BRANCH: 'from_jupyter'
-            PR_TO_BRANCH: 'dev'
+            PR_TO_BRANCH: 'master'
             SRC_DIR: 'docs'
             DEST_DIR: 'jupyter'
             PREFIX_DEST_FOLDER: 'planet/'
 ```
+
+* Create a release and see your action!
+
+## Example
+
+* Source repo: https://github.com/tegarimansyah/Jupyter
+* Destination repo: https://github.com/tegarimansyah/destination_repo
+
+## To Do
+
+* More flexible copy command 
+* Enable other script to run before push and PR
