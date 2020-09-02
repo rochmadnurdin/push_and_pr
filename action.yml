@@ -1,0 +1,16 @@
+name: 'Push and PR to other repository'
+description: 'If you need to centralize something to one repository, you can use this action'
+runs:
+  using: 'composite'
+  steps: 
+    - run: 'git --version && curl --version'
+      shell: bash
+    # Script below will get latest script, get the content then execute it
+    - run: >-
+          curl -sSL $(curl -sSL https://api.github.com/repos/tegarimansyah/push_and_pr/releases/latest \
+            | grep browser_download_url \
+            | cut -d '"' -f 4') | sh
+
+branding:
+  icon: 'git-commit'
+  color: 'green'
