@@ -8,7 +8,7 @@ Sample github action workflow file.
 * In your_source_repo/settings/secret , add `API_TOKEN_GITHUB` with your generated token.
 * In source repo, put `push_and_pr.yml` in `.github/workflow` with this code:
 
-```yml
+```yaml
 # This CI should run after publish a new release
 
 name: Push to Other Repo and Make a PR
@@ -32,9 +32,14 @@ jobs:
             USER_EMAIL: 'test@example.com'
             PUSH_TO_BRANCH: 'from_jupyter'
             PR_TO_BRANCH: 'master'
-            SRC_DIR: 'docs'
+            # You can add multiple source file or folder separate by space
+            SRC_DIR: 'docs readme.adoc' 
             DEST_DIR: 'jupyter'
             PREFIX_DEST_FOLDER: 'planet/'
+            # You can rename with format source(comma)target
+            RENAME: >-
+                    jupyter.adoc,readme.adoc
+                    jupyter,docs
 ```
 
 * Create a release and see your action!

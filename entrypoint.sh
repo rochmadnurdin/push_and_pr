@@ -39,19 +39,25 @@ fi
 cd $CLONE_DIR && git pull origin $PR_TO_BRANCH
 cd $CUR_DIR
 
-# To Do: More flexible copy mechanism
-echo 'Copying from '"$SRC_DIR"'/*' "to $CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR"
+# Flexible copy mechanism
+echo "Copying from $SRC_DIR to $CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR"
 mkdir -p "$CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR"
-if ! cp -R "$SRC_DIR"/* "$CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR" ; then
-    echo "Error copying $SRC_DIR/* to $CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR"
+if ! cp -R $SRC_DIR "$CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR" ; then
+    echo "Error copying $SRC_DIR to $CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR"
     rm -Rf "$CLONE_DIR"
     exit 1
 fi
-if ! cp readme.adoc "$CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR.adoc" ; then
-    echo "Error copying readme.adoc to $CLONE_DIR/$PREFIX_DEST_FOLDER$DEST_DIR.adoc"
-    rm -Rf "$CLONE_DIR"
-    exit 1
-fi
+
+# Rename file or folder if exist
+OLDIFS=$IFS
+IFS=',' # separate line with comma
+for i in ${!RENAME[@]};
+do
+    read source target <<< "${RENAME[$i]}"
+    echo "rename $CLONE_DIR/$source to $CLONE_DIR/$target"
+    mv $CLONE_DIR/$source $CLONE_DIR/$target
+done
+IFS=$OLDIFS
 
 echo "Push to $DEST_GITHUB_USERNAME/$DEST_REPO_NAME in branch $PUSH_TO_BRANCH"
 cd "$CLONE_DIR"
@@ -64,7 +70,7 @@ fi
 
 echo "Create Pull Request"
 if ! curl --location -s --request POST "https://api.github.com/repos/$DEST_GITHUB_USERNAME/$DEST_REPO_NAME/pulls" \
---header "Authorization: token $API_TOKEN_GITHUB"
+--header "Authorization: token $API_TOKEN_GITHUB" \
 --header 'Accept: application/vnd.github.v3+json' \
 --header 'Content-Type: application/json' \
 --data-raw "{
